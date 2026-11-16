@@ -52,9 +52,9 @@ jobs:
           sudo apt-get install -y openjdk-17-jdk || true
           sudo apt-get install -y libncurses5-dev libtinfo5 || true
 
-      - name: Install Buildozer
+      - name: Install Buildozer + modern Cython
         run: |
-          pip install buildozer Cython==0.29.33
+          pip install buildozer cython
 
       - name: Build APK
         run: buildozer android debug
