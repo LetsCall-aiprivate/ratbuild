@@ -19,26 +19,37 @@ jobs:
       - name: Wipe any stale buildozer state
         run: rm -rf ~/.buildozer
 
-      - name: Pre-accept ALL Android SDK licenses
+      - name: Pre-install SDK command-line tools + accept licenses
         run: |
-          mkdir -p /home/runner/.buildozer/android/platform/android-sdk/licenses
-          printf "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > /home/runner/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          printf "\nd56f5187479451eabf01fb78af6dfcb131a6481e" >> /home/runner/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          printf "\n24333f8a63b6825ea9c5514f83c2829b004d1fee" >> /home/runner/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          printf "\nd975f751698a77b662f1254ddbe0b4262bafe0e0" >> /home/runner/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          printf "\n84831b9409646a918e30573bab4c9c91346d8abd" > /home/runner/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
+          SDK=/home/runner/.buildozer/android/platform/android-sdk
+          mkdir -p $SDK/cmdline-tools $SDK/licenses
+          printf "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > $SDK/licenses/android-sdk-license
+          printf "\nd56f5187479451eabf01fb78af6dfcb131a6481e" >> $SDK/licenses/android-sdk-license
+          printf "\n24333f8a63b6825ea9c5514f83c2829b004d1fee" >> $SDK/licenses/android-sdk-license
+          printf "\nd975f751698a77b662f1254ddbe0b4262bafe0e0" >> $SDK/licenses/android-sdk-license
+          printf "\n84831b9409646a918e30573bab4c9c91346d8abd" > $SDK/licenses/android-sdk-preview-license
+          curl -sL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o /tmp/cmdl.zip
+          unzip -q /tmp/cmdl.zip -d $SDK/cmdline-tools
+          mv $SDK/cmdline-tools/cmdline-tools $SDK/cmdline-tools/latest
+          yes | $SDK/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
+          $SDK/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "build-tools;34.0.0" "platforms;android-33" > /dev/null
+          ls $SDK/build-tools
 
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config \
+          sudo apt-get install -y git zip unzip autoconf libtool pkg-config \
             zlib1g-dev libncurses-dev libtinfo6 cmake libffi-dev libssl-dev
+          sudo apt-get install -y openjdk-17-jdk || sudo apt-get install -y openjdk-21-jdk || true
           sudo apt-get install -y libncurses5-dev libtinfo5 || true
 
-      - name: Force Java 17
+      - name: Set JAVA_HOME to whatever Java is actually installed
         run: |
-          echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
-          echo "/usr/lib/jvm/java-17-openjdk-amd64/bin" >> $GITHUB_PATH
+          JDIR=$(dirname $(dirname $(readlink -f $(which javac))))
+          echo "JAVA_HOME=$JDIR" >> $GITHUB_ENV
+          echo "$JDIR/bin" >> $GITHUB_PATH
+          echo "Using Java at: $JDIR"
+          javac -version
 
       - name: Install Buildozer
         run: |
