@@ -33,6 +33,9 @@ jobs:
           mv $SDK/cmdline-tools/cmdline-tools $SDK/cmdline-tools/latest
           yes | $SDK/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
           $SDK/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "build-tools;34.0.0" "platforms;android-33" > /dev/null
+          mkdir -p $SDK/tools/bin
+          ln -sf $SDK/cmdline-tools/latest/bin/sdkmanager $SDK/tools/bin/sdkmanager
+          ln -sf $SDK/cmdline-tools/latest/bin/avdmanager $SDK/tools/bin/avdmanager
           ls $SDK/build-tools
 
       - name: Install system dependencies
