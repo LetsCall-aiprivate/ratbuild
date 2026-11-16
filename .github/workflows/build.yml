@@ -13,8 +13,7 @@ jobs:
 
       - name: Free up disk space
         run: |
-          sudo rm -rf /usr/local/lib/android/sdk/ndk
-          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup
+          sudo rm -rf /usr/local/lib/android/sdk /usr/share/dotnet /opt/ghc /usr/local/.ghcup
           df -h
 
       - name: Wipe any stale buildozer state
@@ -35,18 +34,6 @@ jobs:
       - name: Install Buildozer
         run: |
           pip install buildozer Cython==0.29.33
-
-      - name: Link runner SDK into Buildozer's expected path
-        run: |
-          mkdir -p /home/runner/.buildozer/android/platform
-          ln -s /usr/local/lib/android/sdk /home/runner/.buildozer/android/platform/android-sdk
-
-      - name: Install SDK components + accept licenses
-        run: |
-          SDKMANAGER=/usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager
-          yes | $SDKMANAGER --licenses > /dev/null || true
-          $SDKMANAGER --install "build-tools;34.0.0" "platform-tools" "platforms;android-33" > /dev/null
-          ls /usr/local/lib/android/sdk/build-tools
 
       - name: Build APK
         run: buildozer android debug
